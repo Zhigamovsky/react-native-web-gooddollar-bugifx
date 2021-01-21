@@ -4,7 +4,7 @@ import {StyleSheet, Text, AppState, Platform, Button, View} from 'react-native';
 export const Test = () => {
   const [notify, setNotify] = useState(false);
 
-  const dissmissNotification = useCallback(() => setNotify(false), []);
+  const dissmissNotification = useCallback(() => setNotify(false), [setNotify]);
 
   useEffect(() => {
     const showNotification = () => setNotify(true);
