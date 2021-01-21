@@ -1,44 +1,32 @@
-import React, {useState, useMemo, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {StyleSheet, Text, AppState, Platform, Button, View} from 'react-native';
-
-const _window = Platform.select({
-  web: window,
-  native: {
-    addEventListener: () => {},
-    removeEventListener: () => {},
-  },
-});
 
 export const Test = () => {
   const [notify, setNotify] = useState(false);
 
-  const notifyActions = useMemo(
-    () => ({
-      show: () => setNotify(true), // explicit 'true'
-      hide: () => setNotify(false), // explicit 'false'
-    }),
-    [setNotify], // deps
-  );
+  const dissmissNotification = useCallback(() => setNotify(false), []);
 
   useEffect(() => {
+    const showNotification = () => setNotify(true);
+
     // listener for subscriptions
     const listener = Platform.select({
-      web: notifyActions.show, // just show notify
-      native: appState => 'active' !== appState && notifyActions.show(), // check app state
+      web: showNotification, // just show notify
+      native: appState => 'active' !== appState && showNotification(), // check app state
     });
 
     // subscription
     Platform.select({
-      web: _window.addEventListener('blur', listener), // for web - 'blur' event
-      native: AppState.addEventListener('change', listener), // for native - change event with non 'active' state
-    });
+      web: () => window.addEventListener('blur', listener),
+      native: () => AppState.addEventListener('change', listener),
+    })();
 
     // unsubscription
     return Platform.select({
-      web: () => _window.removeEventListener('blur', listener), // for web - 'blur' event
+      web: () => window.removeEventListener('blur', listener), // for web - 'blur' event
       native: () => AppState.removeEventListener('change', listener), // for native - change event with non 'active' state
     });
-  }, [notifyActions]); // deps
+  }, [setNotify]); // deps
 
   return (
     <View style={styles.container}>
@@ -50,7 +38,7 @@ export const Test = () => {
           <Button
             style={styles.button}
             title="Dismiss"
-            onPress={notifyActions.hide} // onPress instead of onClick
+            onPress={dissmissNotification} // onPress instead of onClick
           />
         </View>
       )}
