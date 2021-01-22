@@ -4,7 +4,7 @@ import {StyleSheet, Text, AppState, Platform, Button, View} from 'react-native';
 export const Test = () => {
   const [notify, setNotify] = useState(false);
 
-  const dissmissNotification = useCallback(() => setNotify(false), [setNotify]);
+  const dismissNotification = useCallback(() => setNotify(false), [setNotify]);
 
   useEffect(() => {
     const showNotification = () => setNotify(true);
@@ -38,7 +38,7 @@ export const Test = () => {
           <Button
             style={styles.button}
             title="Dismiss"
-            onPress={dissmissNotification} // onPress instead of onClick
+            onPress={dismissNotification} // onPress instead of onClick
           />
         </View>
       )}
